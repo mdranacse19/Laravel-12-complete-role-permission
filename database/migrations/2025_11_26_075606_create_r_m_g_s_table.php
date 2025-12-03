@@ -16,9 +16,11 @@ return new class extends Migration
             $table->foreignId('type')->nullable()->comment('Type for the association')->constrained('association_types')->cascadeOnUpdate()->nullOnDelete();
             $table->char('reg_no', 60)->unique();
             $table->string('name');
+            $table->string('bn_name');
             $table->text('address')->nullable();
             $table->string('telephone')->nullable();
             $table->string('contact_person');
+            $table->string('bn_contact_person');
             $table->char('contact_mobile', 11);
             $table->char('contact_phone', 20)->nullable();
             $table->string('contact_email')->nullable();

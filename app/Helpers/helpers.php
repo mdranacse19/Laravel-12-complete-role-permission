@@ -6,6 +6,7 @@ if (!function_exists('userAbilities')) {
         $user = $user ?? auth()->user();
 
         $abilities = [];
+
         if ($user?->roles->isNotEmpty()) {
             $abilities = $user?->roles->first()
                 ->permissions()

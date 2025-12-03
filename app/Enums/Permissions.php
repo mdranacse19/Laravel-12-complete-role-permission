@@ -65,18 +65,6 @@ enum Permissions: string
     #[Abilities(['access', 'create'])]
     case LOGBOOK = 'logbook';
 
-    #[Module('Post Training')]
-    #[Group('Programs')]
-    #[Description('Permissions for post training activity management.')]
-    #[Abilities(['access', 'create'])]
-    case LEARNER_ACTIVITY = 'learner_activity';
-
-    #[Module('Activity')]
-    #[Group('Programs')]
-    #[Description('Permissions for activity management.')]
-    #[Abilities(['access', 'create', 'update', 'delete'])]
-    case PROGRAM_ACTIVITY = 'program_activity';
-
     /*
     |--------------------------------------------------------------------------
     | MONITORING
@@ -87,12 +75,6 @@ enum Permissions: string
     #[Description('Permissions for monitoring activities.')]
     #[Abilities(['access', 'create', 'update', 'delete'])]
     case MONITORING = 'monitoring';
-
-    #[Module('Action Point')]
-    #[Group('Monitoring & Action')]
-    #[Description('Permissions for managing monitoring action points')]
-    #[Abilities(['access', 'update', 'delete'])]
-    case ACTION_POINT = 'monitoring_action';
 
     /*
     |--------------------------------------------------------------------------
@@ -199,4 +181,13 @@ enum Permissions: string
     #[Description('Permissions for audit management.')]
     #[Abilities(['access', 'view'])]
     case AUDIT = 'audit';
+
+    /**
+     * Build a full permission string ("caseValue_ability").
+     * Example: Permissions::ASSOCIATION_TYPE->permission('access') => "association_type_access".
+     */
+    public function permission(string $ability): string
+    {
+        return $this->value.'_'.$ability;
+    }
 }

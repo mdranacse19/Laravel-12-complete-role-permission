@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Dashboard\Setup;
 
-use App\Actions\Association\CreateAssociation;
-use App\Actions\Association\DeleteAssociation;
-use App\Actions\Association\UpdateAssociation;
+use App\Actions\Setup\AssociationType\CreateAssociation;
+use App\Actions\Setup\AssociationType\DeleteAssociation;
+use App\Actions\Setup\AssociationType\UpdateAssociation;
 use App\Http\Controllers\Controller;
 use App\Models\Setup\AssociationType;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -49,7 +49,7 @@ class AssociationTypeController extends Controller
         $associationTypes = $query->paginate($perPage);
 
         return Inertia::render('dashboard/setup/association-types/Index', [
-            'associationTypes' => $associationTypes,
+            'associationTypes' => AssociationTypeResource::collection($associationTypes),
             'filters' => $request->only(['search', 'order_by', 'order_direction']),
         ]);
     }

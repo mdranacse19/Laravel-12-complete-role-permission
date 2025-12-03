@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('rmg_id')->after('id')->nullable()->comment('RMG for the user')->constrained('rmgs')->cascadeOnUpdate()->nullOnDelete();
+            $table->string('bn_name')->after('name')->nullable();
             $table->boolean('is_active')->after('password')->default(true);
             $table->softDeletes();
         });

@@ -19,12 +19,15 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class FormBuilderController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): Response
     {
-        Gate::authorize('viewAny', DynamicForm::class);
+        $this->authorize('viewAny', DynamicForm::class);
 
         $forms = DynamicForm::query()
             ->when($request->get('search'), fn ($query, $search) => $query->where('name', 'like', '%'.$search.'%'))
@@ -38,7 +41,7 @@ class FormBuilderController extends Controller
             return $item;
         });
 
-        return Inertia::render('dashboard/setup/form-builder/Index', [
+        return Inertia::render('dashboard/setup/dynamic-form/Index', [
             'forms' => $forms,
         ]);
     }
@@ -49,7 +52,7 @@ class FormBuilderController extends Controller
 
         $types = FormType::options();
 
-        return Inertia::render('dashboard/setup/form-builder/Create', [
+        return Inertia::render('dashboard/setup/dynamic-form/Create', [
             'types' => $types,
         ]);
     }
@@ -59,7 +62,7 @@ class FormBuilderController extends Controller
         try {
             $action->handle($request);
 
-            return redirect(route('setup.form-builder.index'))->with('success', 'Form created successfully!');
+            return redirect(route('setup.dynamic-form.index'))->with('success', 'Form created successfully!');
         } catch (\Exception $e) {
             Log::error($e->getMessage(), ['Form create']);
 
@@ -93,7 +96,7 @@ class FormBuilderController extends Controller
         ];
 
         return Inertia::render(
-            'dashboard/setup/form-builder/Create', [
+            'dashboard/setup/dynamic-form/Create', [
                 'form' => $editData,
                 'types' => $types,
             ]
@@ -105,7 +108,7 @@ class FormBuilderController extends Controller
         try {
             $action->handle($id, $request);
 
-            return redirect(route('setup.form-builder.index'))
+            return redirect(route('setup.dynamic-form.index'))
                 ->with('success', 'Form updated successfully!');
         } catch (\Exception $e) {
             Log::error($e->getMessage(), [

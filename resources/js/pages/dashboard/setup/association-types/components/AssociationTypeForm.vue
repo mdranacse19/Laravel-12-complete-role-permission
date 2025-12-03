@@ -6,23 +6,13 @@ import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
-import { useToast } from "primevue/usetoast";
 import Skeleton from 'primevue/skeleton';
-import DatePicker from 'primevue/datepicker';
+// import DatePicker from 'primevue/datepicker';
 import { index as associationTypesIndex, store as associationTypesStore, update as associationTypesUpdate } from '@/routes/setup/association-type';
-import { z } from 'zod';
-
-const TOAST_LIFE = { success: 3000, error: 5000, info: 3000 };
-
-// Zod validation schema
-const validationSchema = z.object({
-    name: z.string().min(1, 'Name is required').max(255, 'Name must not exceed 255 characters'),
-    description: z.string().optional(),
-    appKey: z.string().max(255, 'App Key must not exceed 255 characters').optional(),
-    validUntil: z.date().nullable().optional(),
-    token: z.string().max(500, 'Token must not exceed 500 characters').optional(),
-    isActive: z.boolean(),
-});
+import * as yup from 'yup';
+import { useToastNotification } from '@/composables/useToastNotification';
+import { useFormValidation } from '@/composables/useFormValidation';
+import DatePicker from '@/components/DatePicker.vue';
 
 interface AssociationType {
     id: number;
@@ -44,9 +34,9 @@ const emit = defineEmits<{
     cancel: [];
 }>();
 
-const toast = useToast();
+const { showError } = useToastNotification();
+const { validationErrors, validateWithSchema, clearValidationErrors } = useFormValidation();
 const isProcessing = ref(false);
-const validationErrors = ref<Record<string, string>>({});
 
 const form = useForm({
     name: props.association?.name ?? '',
@@ -65,40 +55,33 @@ const submitUrl = computed(() => {
 
 const submitMethod = computed(() => props.mode === 'create' ? 'post' : 'put');
 
-// Helper to show toast notification
-const showToast = (severity: 'success' | 'error' | 'info', detail: string) => {
-    toast.add({
-        severity,
-        summary: severity === 'error' ? 'Error' : severity === 'success' ? 'Success' : 'Info',
-        detail,
-        group: 'br',
-        life: TOAST_LIFE[severity] || 3000
+// YUP validation schema
+const validationSchema = yup.object({
+    name: yup.string().required('Name is required').max(255, 'Name must not exceed 255 characters'),
+    description: yup.string().optional(),
+    appKey: yup.string().max(255, 'App Key must not exceed 255 characters').optional(),
+    validUntil: yup.date().nullable().optional(),
+    token: yup.string().max(500, 'Token must not exceed 500 characters').optional(),
+    isActive: yup.boolean().required(),
+});
+
+// Validate form data
+const validateForm = async () => {
+    form.clearErrors(); // Clear Inertia form errors
+    
+    return await validateWithSchema(validationSchema, form, {
+        showToastOnError: true,
+        toastMessage: 'Something error found!',
+        abortEarly: false
     });
 };
 
-// Validate form data
-const validateForm = () => {
-    validationErrors.value = {};
-    const result = validationSchema.safeParse(form.data());
+const handleSubmit = async () => {
+    if (isProcessing.value) return;
+    
+    const isValid = await validateForm();
 
-    if (!result.success) {
-        result.error.issues.forEach((issue: any) => {
-            const field = issue.path[0] as string;
-            validationErrors.value[field] = issue.message;
-        });
-        const firstError = Object.values(validationErrors.value)[0] as string;
-        showToast('error', firstError);
-        return false;
-    }
-    return true;
-};// Transform form data for submission
-const transformFormData = () => ({
-    ...form.data(),
-    validUntil: form.validUntil ? form.validUntil.toISOString().split('T')[0] : null,
-});
-
-const handleSubmit = () => {
-    if (isProcessing.value || !validateForm()) return;
+    if (!isValid) return;
 
     isProcessing.value = true;
 
@@ -106,11 +89,11 @@ const handleSubmit = () => {
         preserveScroll: true,
         onError: (errors: any) => {
             isProcessing.value = false;
-            Object.values(errors).forEach((error: any) => showToast('error', error));
+            Object.values(errors).forEach((error: any) => showError(error));
         },
         onSuccess: () => {
             isProcessing.value = false;
-            validationErrors.value = {};
+            clearValidationErrors();
             emit('success');
         },
         onFinish: () => {
@@ -118,12 +101,10 @@ const handleSubmit = () => {
         },
     };
 
-    const submitData = transformFormData();
-
     if (submitMethod.value === 'post') {
-        form.transform(() => submitData).post(submitUrl.value, options);
+        form.transform(() => ({...form.data()})).post(submitUrl.value, options);
     } else {
-        form.transform(() => submitData).put(submitUrl.value, options);
+        form.transform(() => ({...form.data()})).put(submitUrl.value, options);
     }
 };
 
@@ -131,6 +112,7 @@ const handleCancel = () => {
     form.reset();
     emit('cancel');
 };
+
 </script>
 
 <template>
@@ -218,7 +200,6 @@ const handleCancel = () => {
                     placeholder="Enter association type valid until"
                     :invalid="!!validationErrors.validUntil || !!form.errors.validUntil"
                     fluid
-                    dateFormat="yy-mm-dd"
                 />
                 <Message v-if="validationErrors.validUntil || form.errors.validUntil" severity="error" variant="simple" size="small" class="mt-2">
                     {{ validationErrors.validUntil || form.errors.validUntil }}

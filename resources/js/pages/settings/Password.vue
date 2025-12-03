@@ -6,7 +6,7 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/user-password';
 import { Form, Head } from '@inertiajs/vue3';
 
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import HeadingSmall from '@/components/dashboard/HeadingSmall.vue';
 import Button from 'primevue/button';
 import Password from 'primevue/password';
 import { type BreadcrumbItem } from '@/types';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\StakeholderType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,13 +14,18 @@ return new class extends Migration
     {
         Schema::create('stakeholders', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['government', 'non_government', 'private_sector', 'community'])->comment('Type of stakeholder');
+            $table->enum('type', StakeholderType::values())->comment('Type of stakeholder');
             $table->string('name');
+            $table->string('bn_name')->nullable();
             $table->string('designation')->nullable();
+            $table->string('bn_designation')->nullable();
             $table->char('mobile', 11)->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->text('two_factor_secret')->nullable();
+            $table->text('two_factor_recovery_codes')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();

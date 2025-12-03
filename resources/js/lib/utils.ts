@@ -9,8 +9,13 @@ export function cn(...inputs: ClassValue[]) {
 export function urlIsActive(
     urlToCheck: NonNullable<InertiaLinkProps['href']>,
     currentUrl: string,
+    checkPrefix: boolean = false,
 ) {
-    return toUrl(urlToCheck) === currentUrl;
+    const url = toUrl(urlToCheck);
+    if (checkPrefix) {
+        return currentUrl.startsWith(url);
+    }
+    return url === currentUrl;
 }
 
 export function toUrl(href: NonNullable<InertiaLinkProps['href']>) {

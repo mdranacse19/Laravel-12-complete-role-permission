@@ -4,8 +4,8 @@ import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 
-import DeleteUser from '@/components/DeleteUser.vue';
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import DeleteUser from '@/components/dashboard/DeleteUser.vue';
+import HeadingSmall from '@/components/dashboard/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';

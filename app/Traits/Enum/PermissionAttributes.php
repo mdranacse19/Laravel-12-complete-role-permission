@@ -104,15 +104,15 @@ trait PermissionAttributes
     /**
      * Retrieves permissions with all the informations available and groups them form PrimeVue Tree Component.
      */
-    public static function byPrimeVueGroup(array $abilities = []): array
+    public static function byPrimeVueGroup(array $abilities = [], bool $isSuperAdmin = false): array
     {
         $groups = [];
 
         foreach (self::byGroup() as $groupName => $groupSets) {
             if ($groupName) {
 
-                $results = array_values(array_filter(Arr::map($groupSets, function (array $groupSet, int $key) use($abilities) {
-                    return self::prepareTreeItem($groupSet, $abilities);
+                $results = array_values(array_filter(Arr::map($groupSets, function (array $groupSet, int $key) use($abilities, $isSuperAdmin) {
+                    return self::prepareTreeItem($groupSet, $abilities, $isSuperAdmin);
                 })));
 
                 if(count($results) != 0)  {
@@ -126,7 +126,7 @@ trait PermissionAttributes
 
             } else {
                 foreach ($groupSets as $groupSet) {
-                    $results = self::prepareTreeItem($groupSet, $abilities);
+                    $results = self::prepareTreeItem($groupSet, $abilities, $isSuperAdmin);
 
                     if(count($results) != 0){
                         array_push($groups, $results);
@@ -143,19 +143,19 @@ trait PermissionAttributes
     /**
      * Helper function for structuring PrimeVue tree groups.
      */
-    private static function prepareTreeItem(array $groupSet, array $abilities = []): array
+    private static function prepareTreeItem(array $groupSet, array $abilities = [], bool $isSuperAdmin = false): array
     {
         $accessPermissionStr = data_get($groupSet, 'value').'_'.data_get($groupSet, 'abilities.0');
         // dd($permission, $abilities);
 
-        if(!in_array($accessPermissionStr, $abilities)) return [];
+        if(!$isSuperAdmin && !in_array($accessPermissionStr, $abilities)) return [];
 
         return [
             'label' => Str::headline($groupSet['module']),
             'key' => $groupSet['value'],
             'description' => $groupSet['description'],
-            'children' => array_values(array_filter(Arr::map($groupSet['abilities'], function (string $permission, string $key) use ($groupSet, $abilities) {
-                    if(!in_array($groupSet['value'].'_'.$permission, $abilities)) return [];
+            'children' => array_values(array_filter(Arr::map($groupSet['abilities'], function (string $permission, string $key) use ($groupSet, $abilities, $isSuperAdmin) {
+                    if(!$isSuperAdmin && !in_array($groupSet['value'].'_'.$permission, $abilities)) return [];
 
                     return [
                         'key' => $groupSet['value'].'_'.$permission,

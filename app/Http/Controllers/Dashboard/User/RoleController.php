@@ -45,7 +45,8 @@ class RoleController extends Controller
         Gate::authorize('role_create');
 
         $abilities = userAbilities();
-        $allPermissions = PermissionsEnum::byPrimeVueGroup($abilities);
+        $isSuperAdmin = auth()->user()->hasRole([RoleService::SUPER_ADMIN]);
+        $allPermissions = PermissionsEnum::byPrimeVueGroup($abilities, $isSuperAdmin);
 
 
         return Inertia::render('dashboard/roles/Create', compact('allPermissions'));
@@ -85,7 +86,8 @@ class RoleController extends Controller
         $rolePermissions = $service->getRolesPermissions($role);
 
         $abilities = userAbilities();
-        $allPermissions = PermissionsEnum::byPrimeVueGroup($abilities);
+        $isSuperAdmin = auth()->user()->hasRole([RoleService::SUPER_ADMIN]);
+        $allPermissions = PermissionsEnum::byPrimeVueGroup($abilities, $isSuperAdmin);
 
         return Inertia::render('dashboard/roles/Edit', [
             'role' => $role,

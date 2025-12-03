@@ -20,6 +20,7 @@ import { type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
 import { index as associationTypesIndex, destroy as associationTypesDestroy } from '@/routes/setup/association-type';
 import AssociationTypeForm from './components/AssociationTypeForm.vue';
+import { formatDate } from '@/utils/helpers';
 
 const DEBOUNCE_DELAY = 1500;
 const DEFAULT_PAGE_SIZE = 10;
@@ -29,10 +30,10 @@ interface AssociationType {
     id: number;
     name: string;
     description?: string;
-    app_key?: string;
-    valid_until?: string;
+    appKey?: string | any;
+    validUntil?: string;
     token?: string;
-    is_active: boolean;
+    isActive: boolean;
     deletable: boolean;
 }
 
@@ -134,10 +135,10 @@ const transformToFormData = (association: AssociationType) => ({
     id: association.id,
     name: association.name,
     description: association.description,
-    appKey: association.app_key,
-    validUntil: association.valid_until,
+    appKey: association.appKey,
+    validUntil: association.validUntil,
     token: association.token,
-    isActive: association.is_active,
+    isActive: association.isActive,
 });
 
 const openCreateModal = () => {
@@ -250,22 +251,22 @@ const deleteAssociation = (associationID: number, name: string) => {
                         </template>
                     </Column>
 
-                    <Column field="valid_until" header="Valid Until" style="width: 150px; height: 44px">
+                    <Column field="validUntil" header="Valid Until" style="width: 150px; height: 44px">
                         <template #body="slotProps">
                             <div v-if="isLoading" class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
                                 <Skeleton width="70%" height="1rem" />
                             </div>
-                            <span v-else>{{ slotProps.data.valid_until || '-' }}</span>
+                            <span v-else>{{ formatDate(slotProps.data.validUntil, "MMM D, YYYY") || '-' }}</span>
                         </template>
                     </Column>
 
-                    <Column field="is_active" header="Status" style="width: 100px; height: 44px">
+                    <Column field="isActive" header="Status" style="width: 100px; height: 44px">
                         <template #body="slotProps">
                             <div v-if="isLoading" class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
                                 <Skeleton width="60%" height="1rem" />
                             </div>
-                            <Tag v-else :severity="slotProps.data.is_active ? 'success' : 'danger'">
-                                {{ slotProps.data.is_active ? 'Active' : 'Inactive' }}
+                            <Tag v-else :severity="slotProps.data.isActive ? 'success' : 'danger'">
+                                {{ slotProps.data.isActive ? 'Active' : 'Inactive' }}
                             </Tag>
                         </template>
                     </Column>

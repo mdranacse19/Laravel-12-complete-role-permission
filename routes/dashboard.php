@@ -1,11 +1,9 @@
 <?php
 
 use App\Http\Controllers\Dashboard\Form\FormBuilderController;
-use App\Http\Controllers\Dashboard\Profile\StakeholderController;
-use App\Http\Controllers\Dashboard\Setup\AssociationTypeController;
+use App\Http\Controllers\Dashboard\Setup\AssociationTypeController; 
 use App\Http\Controllers\Dashboard\User\RoleController;
-use App\Models\Profile\Stakeholder;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 use Inertia\Inertia;
 use App\Http\Controllers\Dashboard\User\UserController;
 use Laravel\Fortify\Features;
@@ -31,7 +29,6 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 
     // Profile
     Route::prefix('profile')->name('profile.')->group(function () {
-        Route::resource('stakeholders', StakeholderController::class)->except(['create', 'show', 'edit'])->middleware(['can:stakeholder_access']);
     });
 
     // Setup management

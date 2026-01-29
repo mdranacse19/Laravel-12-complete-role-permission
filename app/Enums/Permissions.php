@@ -35,11 +35,7 @@ enum Permissions: string
     #[Abilities(['access', 'create', 'update', 'delete', 'bulk_action', 'export'])]
     case PARTNER = 'partner';
 
-    #[Module('Stakeholder')]
-    #[Group('Profiles')]
-    #[Description('Permissions for managing stakeholders profile.')]
-    #[Abilities(['access', 'create', 'update', 'delete', 'bulk_action', 'export'])]
-    case STAKEHOLDER = 'stakeholder';
+
 
     #[Module('RMG')]
     #[Group('Profiles')]

@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Form\DynamicForm;
-use App\Models\Profile\Stakeholder;
 use App\Models\User;
-use App\Policies\StakeholderPolicy;
 use App\Models\Setup\AssociationType;
 use App\Policies\AssociationTypePolicy;
 use App\Policies\DynamicFormPolicy;
@@ -24,7 +22,6 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         AssociationType::class => AssociationTypePolicy::class,
         DynamicForm::class => DynamicFormPolicy::class,
-        Stakeholder::class => StakeholderPolicy::class,
         User::class => UserPolicy::class,
     ];
 

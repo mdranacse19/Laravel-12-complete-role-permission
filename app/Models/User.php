@@ -8,11 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
+   use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles,softDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -49,5 +51,21 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Check if the user has the Super Admin role.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole(\App\Services\RoleService::SUPER_ADMIN);
+    }
+
+    /**
+     * Check if the user has the Admin role.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(\App\Services\RoleService::ADMIN);
     }
 }

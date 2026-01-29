@@ -22,6 +22,7 @@ import {
 import { dashboard } from '@/routes';
 import { index as formsIndex } from '@/routes/setup/dynamic-form';
 import { index as rolesIndex } from '@/routes/roles';
+import { index as usersIndex } from '@/routes/users';
 import { index as associationTypesIndex } from '@/routes/setup/association-type';
 import { hasPermission } from '@/Helpers/authorization';
 
@@ -30,7 +31,7 @@ defineProps<{
 }>();
 
 const page = usePage();
-
+const userCollapsibleOpen = ref<boolean>(false);
 // Determine if any Setup child route is active (expand collapsible accordingly)
 const isSetupActive = computed(() => {
     // associationTypesIndex may expose url() method (object) or be a function returning object.
@@ -45,10 +46,22 @@ const isSetupActive = computed(() => {
     }
 });
 
+const isMainSidebarActive = (URL: Array<string>) => {
+    return URL.some((url) => {
+        return page.url.startsWith(url);
+    });
+};
+
 // Bind to Collapsible open state
 const setupOpen = ref(false);
 watchEffect(() => {
     setupOpen.value = isSetupActive.value;
+
+     // LMS
+    userCollapsibleOpen.value = isMainSidebarActive([
+        rolesIndex.url(),
+        usersIndex.url(),
+    ]);
 });
 </script>
 
@@ -63,36 +76,6 @@ watchEffect(() => {
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
-
-            <Collapsible
-                v-if="hasPermission(['association_type_access'])"
-                as-child
-                class="group/collapsible"
-                v-model:open="setupOpen"
-            >
-                <SidebarMenuItem v-if="hasPermission('association_type_access')">
-                    <CollapsibleTrigger as-child>
-                        <SidebarMenuButton :is-active="isSetupActive" :tooltip="`Setup`">
-                            <Settings />
-                            <span>Setup</span>
-                            <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <SidebarMenuSub>
-                            <SidebarMenuSubItem>
-                                <SidebarMenuSubButton as-child :is-active="urlIsActive(associationTypesIndex.url(), page.url)" :tooltip="`Association Type`">
-                                    <Link :href="associationTypesIndex.url()">
-                                        <component :is="ArrowRight" />
-                                        <span>Association Type</span>
-                                    </Link>
-                                </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                        </SidebarMenuSub>
-                    </CollapsibleContent>
-                </SidebarMenuItem>
-            </Collapsible>
-
             <SidebarMenuItem v-if="hasPermission('form_builder_access')">
                 <SidebarMenuButton as-child :is-active="urlIsActive(formsIndex().url, page.url, true)" :tooltip="`Forms`">
                     <Link :href="formsIndex().url">
@@ -101,15 +84,82 @@ watchEffect(() => {
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
-            
-            <SidebarMenuItem v-if="hasPermission('role_access')">
-                <SidebarMenuButton as-child :is-active="urlIsActive(rolesIndex().url, page.url, true)" :tooltip="`Roles`">
-                    <Link :href="rolesIndex().url">
-                        <component :is="LayoutGrid" />
-                        <span>Roles</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+
+
+            <!-- User Section as Collapsible -->
+            <Collapsible
+                v-if="hasPermission(['roles_access', 'users_access'])"
+                as-child
+                class="group/collapsible"
+                v-model:open="userCollapsibleOpen"
+            >
+                <SidebarMenuItem
+                    v-if="hasPermission(['roles_access', 'users_access'])"
+                >
+                    <CollapsibleTrigger as-child>
+                        <SidebarMenuButton
+                            :is-active="
+                                isMainSidebarActive([
+                                    rolesIndex.url(),
+                                    usersIndex.url(),
+                                ])
+                            "
+                            tooltip="Users & Roles"
+                        >
+                            <UserRoundCog />
+                            <span>Users & Roles</span>
+                            <ChevronRight
+                                class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                            />
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub>
+                            <SidebarMenuSubItem
+                                v-if="hasPermission('roles_access')"
+                            >
+                                <SidebarMenuSubButton
+                                    as-child
+                                    :is-active="
+                                        urlIsActive(
+                                            rolesIndex().url,
+                                            page.url,
+                                            true,
+                                        )
+                                    "
+                                    tooltip="Roles"
+                                >
+                                    <Link :href="rolesIndex().url">
+                                        <component :is="ArrowRight" />
+                                        <span>Roles</span>
+                                    </Link>
+                                </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                            <SidebarMenuSubItem
+                                v-if="hasPermission('user_access')"
+                            >
+                                <SidebarMenuSubButton
+                                    as-child
+                                    :is-active="
+                                        urlIsActive(
+                                            usersIndex().url,
+                                            page.url,
+                                            true,
+                                        )
+                                    "
+                                    tooltip="Roles"
+                                >
+                                    <Link :href="usersIndex().url">
+                                        <component :is="ArrowRight" />
+                                        <span>Users</span>
+                                    </Link>
+                                </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                </SidebarMenuItem>
+            </Collapsible>
+
         </SidebarMenu>
     </SidebarGroup>
 </template>

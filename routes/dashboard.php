@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\User\RoleController;
 use App\Models\Profile\Stakeholder;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Dashboard\User\UserController;
 use Laravel\Fortify\Features;
 
 Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () {
@@ -19,6 +20,14 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
         Route::resource('roles', RoleController::class)->except(['show']);
         Route::post('roles/{id}/restore', 'restore')->name('roles.restore');
     });
+
+      Route::resource('users', UserController::class);
+    Route::prefix('users')
+        ->middleware(['can:user_access'])
+        ->controller(UserController::class)
+        ->group(function () {
+            Route::patch('{user}/password', 'password')->name('users.password');
+        });
 
     // Profile
     Route::prefix('profile')->name('profile.')->group(function () {

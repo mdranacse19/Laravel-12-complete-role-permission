@@ -59,9 +59,9 @@ const progressLabel = computed(() => Math.round(routeProgress.value));
                     </div>
 
                     <!-- Progress percentage -->
-                    <!-- <div class="progress-percentage">
+                    <div class="progress-percentage">
                         {{ progressLabel }}<span class="percent-sign">%</span>
-                    </div> -->
+                    </div>
 
                     <!-- Loading text -->
                     <div class="route-loading-text">Loading...</div>
@@ -129,8 +129,8 @@ const progressLabel = computed(() => Math.round(routeProgress.value));
     gap: 1rem;
     padding: 2rem;
     border-radius: 1rem;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    /* background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); */
 }
 
 :global(.dark) .spinner-content {

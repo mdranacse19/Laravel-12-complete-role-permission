@@ -12,7 +12,7 @@ import {
 import { urlIsActive } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, Settings, ChevronRight, ArrowRight } from 'lucide-vue-next';
+import { LayoutGrid, UserRoundCog, ChevronRight, ArrowRight, LayoutTemplate } from 'lucide-vue-next';
 import {
     Collapsible,
     CollapsibleContent,
@@ -79,7 +79,7 @@ watchEffect(() => {
             <SidebarMenuItem v-if="hasPermission('form_builder_access')">
                 <SidebarMenuButton as-child :is-active="urlIsActive(formsIndex().url, page.url, true)" :tooltip="`Forms`">
                     <Link :href="formsIndex().url">
-                        <component :is="LayoutGrid" />
+                        <component :is="LayoutTemplate" />
                         <span>Dynamic Forms</span>
                     </Link>
                 </SidebarMenuButton>

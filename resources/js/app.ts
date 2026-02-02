@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
+import { useLoader } from './composables/useLoader';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
@@ -40,10 +41,12 @@ createInertiaApp({
             .use(ToastService)
             .mount(el);
     },
-    progress: {
-        color: '#4B5563',
-    },
+    progress: false, // Disable default progress bar since we have custom loader
 });
 
 // This will set light / dark mode on page load...
 initializeTheme();
+
+// Initialize route loader for Inertia navigation
+const { initializeRouteLoader } = useLoader();
+initializeRouteLoader();

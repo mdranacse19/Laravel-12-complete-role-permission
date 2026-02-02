@@ -88,13 +88,13 @@ watchEffect(() => {
 
             <!-- User Section as Collapsible -->
             <Collapsible
-                v-if="hasPermission(['roles_access', 'users_access'])"
+                v-if="hasPermission(['role_access', 'user_access'])"
                 as-child
                 class="group/collapsible"
                 v-model:open="userCollapsibleOpen"
             >
                 <SidebarMenuItem
-                    v-if="hasPermission(['roles_access', 'users_access'])"
+                    v-if="hasPermission(['role_access', 'user_access'])"
                 >
                     <CollapsibleTrigger as-child>
                         <SidebarMenuButton
@@ -116,7 +116,7 @@ watchEffect(() => {
                     <CollapsibleContent>
                         <SidebarMenuSub>
                             <SidebarMenuSubItem
-                                v-if="hasPermission('roles_access')"
+                                v-if="hasPermission('role_access')"
                             >
                                 <SidebarMenuSubButton
                                     as-child
@@ -147,7 +147,7 @@ watchEffect(() => {
                                             true,
                                         )
                                     "
-                                    tooltip="Roles"
+                                    tooltip="Users"
                                 >
                                     <Link :href="usersIndex().url">
                                         <component :is="ArrowRight" />

@@ -17,7 +17,7 @@ import { showAxiosErrors } from "@/Helpers/toast";
 import { hasPermission } from '@/Helpers/authorization';
 import { type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
-import { index as formsIndex, show as formsShow, destroy as formsDestroy, create as formsCreate, edit as formsEdit } from '@/routes/setup/form-builder';
+import { index as formsIndex, show as formsShow, destroy as formsDestroy, create as formsCreate, edit as formsEdit } from '@/routes/setup/dynamic-form';
 
 interface Form {
     id: number;

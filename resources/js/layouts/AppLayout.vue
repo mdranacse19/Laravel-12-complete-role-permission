@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
+import Preloader from '@/components/Preloader.vue';
+import RouteLoader from '@/components/RouteLoader.vue';
 import type { BreadcrumbItemType } from '@/types';
 import Toast from "primevue/toast";
 import ConfirmDialog from "primevue/confirmdialog";
@@ -14,6 +16,12 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
+    <!-- Global Preloader -->
+    <Preloader />
+
+    <!-- Route Navigation Loader -->
+    <RouteLoader />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <section v-if="$slots.pageHeader">
             <div

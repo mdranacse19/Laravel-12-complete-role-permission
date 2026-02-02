@@ -17,7 +17,7 @@ import { useToast } from 'primevue/usetoast';
 import { showFlashMessage, showAxiosErrors } from '@/Helpers/toast';
 import { type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
-import { index as formsIndex, create as formsCreate, store as formsStore, update as formsUpdate, inputs as formsInputs } from '@/routes/setup/form-builder';
+import { index as formsIndex, create as formsCreate, store as formsStore, update as formsUpdate, inputs as formsInputs } from '@/routes/setup/dynamic-form';
 import { label } from '@primeuix/themes/aura/metergroup';
 
 // Constants

@@ -25,7 +25,22 @@ class UserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && $this->user()->can('create', User::class);
+        if (! auth()->check()) {
+            return false;
+        }
+
+        // For create requests, check create permission
+        if ($this->isMethod('post')) {
+            return $this->user()->can('create', User::class);
+        }
+
+        // For update requests, check update permission against the bound user
+        if (in_array($this->method(), ['PUT', 'PATCH'])) {
+            return $this->user()->can('update', $this->route('user'));
+        }
+
+        // Default allow for other safe methods
+        return true;
     }
 
     /**
@@ -46,10 +61,10 @@ class UserRequest extends FormRequest
                 'email',
                 'max:255',
                 "unique:users,email,{$this->route('user')?->id}",
-                new UniqueEmailAcrossProfiles
+                new UniqueEmailAcrossProfiles(User::class, $this->route('user')?->id),
             ],
             'role' => ['required', 'numeric', Rule::exists(Role::class, 'id')],
-          
+
             'isActive' => ['bool'],
         ];
     }

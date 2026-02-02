@@ -32,7 +32,6 @@ import { useToast } from 'primevue/usetoast';
 import { ref, watch } from 'vue';
 import UserForm from './UserForm.vue';
 import UserPasswordForm from './UserPasswordForm.vue';
-import Card from '@/components/dashboard/Card.vue';
 
 interface PaginatedUsers {
     data: User[];
@@ -169,6 +168,12 @@ const closePasswordModal = () => {
 
 const handleFormSuccess = () => {
     closeModal();
+
+    // Reload list so newly created/updated user appears
+    loadLists({
+        rows: perPage.value,
+        page: formMode.value === 'create' ? 0 : currentPage.value,
+    });
 };
 
 const deleteUser = (userID: number, name: string) => {
@@ -202,9 +207,7 @@ const deleteUser = (userID: number, name: string) => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <template #pageHeader>
-            <h2
-                class="text-xl leading-tight font-semibold text-gray-800 dark:text-gray-200"
-            >
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Users
             </h2>
 
@@ -217,8 +220,10 @@ const deleteUser = (userID: number, name: string) => {
             />
         </template>
 
-        <Card>
-            <DataTable
+        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-4">
+                    <DataTable
                 :value="isLoading ? Array(perPage).fill({}) : userList"
                 @page="loadLists($event)"
                 @sort="onSort($event)"
@@ -237,11 +242,10 @@ const deleteUser = (userID: number, name: string) => {
                 <template #empty> No Items found.</template>
                 <template #header>
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex items-center gap-3">
-                            <span class="dark:text-surface-400 font-medium text-gray-500">
-                                Showing {{ userList.length }} of {{ totalUsers }} Users
-                            </span>
-                        </div>
+                        <span class="text-gray-500 dark:text-surface-400 font-medium">
+                            Showing {{ userList.length }} of {{ totalUsers }} Users
+                        </span>
+
                         <IconField iconPosition="left">
                             <InputIcon>
                                 <i class="pi pi-search"></i>
@@ -251,55 +255,73 @@ const deleteUser = (userID: number, name: string) => {
                     </div>
                 </template>
 
-                <Column field="name" header="Full Name" :sortable="true">
+                <Column field="name" header="Full Name" sortable style="height: 44px">
                     <template #body="slotProps">
-                        {{ slotProps.data.name
-                        }}<span v-if="slotProps.data.bn_name"
-                    ><br />({{ slotProps.data.bn_name }})</span
-                    >
+                        <div v-if="isLoading" class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                            <Skeleton width="60%" height="1rem" />
+                        </div>
+                        <span v-else>
+                            {{ slotProps.data.name
+                            }}<span v-if="slotProps.data.bn_name"
+                        ><br />({{ slotProps.data.bn_name }})</span
+                        >
+                        </span>
                     </template>
                 </Column>
                 <Column
                     field="email"
                     header="Contact"
-                    style="width: 15rem"
-                    :sortable="true"
+                    style="width: 15rem; height: 44px"
+                    sortable
                 >
                     <template #body="slotProps">
-                        <Tag
-                            v-if="slotProps.data.email"
-                            severity="info"
-                            icon="pi pi-at"
-                            :value="slotProps.data.email"
-                            rounded
-                        ></Tag>
-                        <Tag
-                            v-if="slotProps.data.mobile"
-                            class="mt-2"
-                            severity="info"
-                            icon="pi pi-mobile"
-                            :value="slotProps.data.mobile"
-                            rounded
-                        ></Tag>
+                        <div v-if="isLoading" class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                            <Skeleton width="60%" height="1rem" />
+                        </div>
+                        <div v-else>
+                            <Tag
+                                v-if="slotProps.data.email"
+                                severity="info"
+                                icon="pi pi-at"
+                                :value="slotProps.data.email"
+                                rounded
+                            ></Tag>
+                            <Tag
+                                v-if="slotProps.data.mobile"
+                                class="mt-2"
+                                severity="info"
+                                icon="pi pi-mobile"
+                                :value="slotProps.data.mobile"
+                                rounded
+                            ></Tag>
+                        </div>
                     </template>
                 </Column>
-                <Column field="roles" header="Roles">
+                <Column field="roles" header="Roles" style="height: 44px">
                     <template #body="slotProps">
-                        {{
-                            slotProps.data.roles?.length
-                                ? slotProps.data.roles[0].name
-                                : 'Not assigned'
-                        }}
+                        <div v-if="isLoading" class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                            <Skeleton width="60%" height="1rem" />
+                        </div>
+                        <span v-else>
+                            {{
+                                slotProps.data.roles?.length
+                                    ? slotProps.data.roles[0].name
+                                    : 'Not assigned'
+                            }}
+                        </span>
                     </template>
                 </Column>
-                <Column field="status" header="Status" :sortable="true">
+                <Column field="status" header="Status" sortable style="height: 44px">
                     <template #body="{ data }">
-                        <Tag :severity="!!data.is_active ? 'success' : 'danger'">
+                        <div v-if="isLoading" class="flex items-center" :style="{ height: '17px', 'flex-grow': '1', overflow: 'hidden' }">
+                            <Skeleton width="60%" height="1rem" />
+                        </div>
+                        <Tag v-else :severity="!!data.is_active ? 'success' : 'danger'">
                             {{ !!data.is_active ? 'Active' : 'Inactive' }}
                         </Tag>
                     </template>
                 </Column>
-                <Column field="id" header="Action" style="width: 120px">
+                <Column field="id" header="Action" style="width: 150px; height: 44px">
                     <template #body="{ data }">
                         <div
                             v-if="isLoading"
@@ -348,7 +370,9 @@ const deleteUser = (userID: number, name: string) => {
                     </template>
                 </Column>
             </DataTable>
-        </Card>
+                </div>
+            </div>
+        </div>
 
         <!-- Modal Form -->
         <Dialog

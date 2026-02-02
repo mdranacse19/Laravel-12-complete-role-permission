@@ -158,7 +158,13 @@ const deleteRole = (roleID: number) => {
                 Roles
             </h2>
 
-            <Button as="a" v-if="hasPermission('role_create')" label="Add New Role" icon="pi pi-plus" size="small" :href="rolesCreate().url" />
+          <Button
+                v-if="hasPermission('role_create')"
+                label="Add New Role"
+                icon="pi pi-plus"
+                size="small"
+                @click="router.get(rolesCreate().url)"
+            />
         </template>
 
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -215,16 +221,15 @@ const deleteRole = (roleID: number) => {
                                 </div>
                                 <div v-else class="flex gap-2">
                                     <Button
-                                        v-if="hasPermission('role_update')"
-                                        as="a"
-                                        icon="pi pi-pencil"
-                                        severity="info"
-                                        size="small"
-                                        text
-                                        rounded
-                                        v-tooltip.top="'Edit Role'"
-                                        :href="rolesEdit(slotProps.data.id).url"
-                                    />
+                                            v-if="hasPermission('role_update')"
+                                            icon="pi pi-pencil"
+                                            severity="info"
+                                            size="small"
+                                            text
+                                            rounded
+                                            v-tooltip.top="'Edit Role'"
+                                            @click="router.get(rolesEdit(slotProps.data.id).url)"
+                                        />
                                     <Button
                                         v-if="hasPermission('role_delete') && slotProps.data.deletable"
                                         @click="deleteRole(slotProps.data.id)"

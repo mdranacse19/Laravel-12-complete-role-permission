@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
 
         $user = User::factory()->create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@alprtm.com',
+            'email' => 'superadmin@kz.com',
         ]);
 
         $user->assignRole($role);
@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
         $admins = [
             [
                 'name' => 'Admin',
-                'email' => 'admin@alprtm.com',
+                'email' => 'admin@kz.com',
             ],
         ];
 
